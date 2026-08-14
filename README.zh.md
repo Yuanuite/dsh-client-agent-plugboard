@@ -32,6 +32,26 @@ Web 设置里多出一个 **Agent 插线板** 入口。打开它，从名单里�
 1. **现在就给宿主打补丁** —— 在本地应用同样的三包改动（agent-presets 的 `rewriteComposition` + apiproxy 的 `rewrite` RPC + 本 UI），重新构建并重启。
 2. **等官方发版** 合并宿主改动后，`dsh plugin add` 本包即可开箱即用。
 
+### 官方未更新时，自己怎么装才能用（手动打补丁）
+
+宿主的改动落在 dsh 源码树的**三个包**里。如果你是**从源码构建 dsh**，可以直接把下面这段话发给你的 agent（ChatGPT / Claude / 任何 coding agent），它会照着做：
+
+> 请给 dsh 加一个「保留注释」的 `agentPreset.rewrite` 端点，然后安装 `@deepseek-ai/dsh-client-agent-plugboard`。改动涉及三个包：
+>
+> 1. `packages/preset/agent-presets` —— 在 `src/authoring.ts` 里新增 `rewriteComposition(roots, preset, toggles)`（复用 `deleteComposition` 的两道防线：`preset.trust === 'user'` 和「路径必须在可写根目录下」；用 `yaml` v2 的 `Document` API（`parseDocument`/`set`/`delete`/`addIn`）做编辑，这样注释和 `!!js` 文本都能保留）；在 `src/index.ts` 的服务类里加 `rewrite(id, toggles)` 方法；在它的依赖里加 `yaml@^2`。
+> 2. `packages/host/apiproxy` —— 在 `src/api/agent-presets.ts` 加 `rewrite` 契约，在 `src/api/agent-presets.schema.ts` 加请求/响应 schema，在 `src/api/rpc-map.ts` 加 `'agentPreset.rewrite'` 键，在 `src/fetch/handler.ts` 加 handler case，在 `src/fetch/client.ts` 加客户端方法，在 `src/api-proxy.ts` 加 `rewrite` 实现（loopback-pinned + privileged，和 `copy`/`remove` 一样）。
+> 3. **本包** —— 已经发布在这里，直接 `dsh plugin --profile web add @deepseek-ai/dsh-client-agent-plugboard`。
+>
+> 然后 `pnpm run build && pnpm dsh --profile web`，重启即可。
+
+前两个包的具体 diff，就是那个要提交给 `deepseek-ai/deepseek-harness` 的 [tracking PR](#)。等 PR 建好后，让 agent 直接照着这个 PR 来，就能**精确复现**改动，而不是自己重新摸索。
+
+#### 如果你「不是」从源码构建 dsh
+
+那你现在只有一条路：**等官方发版**。因为后端改动在 dsh 宿主的 npm 发布包里，普通用户（只 `npx dsh` / 用已打包版本）没法在不 fork 的情况下改到它。
+
+> 进阶：你也可以 fork `deepseek-ai/deepseek-harness`，把上面三个包的改动打进去，自己 `pnpm build` 出一个带 `rewrite` 的宿主，再 `dsh plugin add` 本包——这等同于「从源码构建」路径。
+
 ## 安装
 
 ```sh

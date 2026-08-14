@@ -32,6 +32,20 @@ Until that host change ships, installing this package alone gives you the page, 
 1. **Patch your host now** — apply the same three-package change locally (agent-presets `rewriteComposition` + apiproxy `rewrite` RPC + this UI), rebuild, and restart.
 2. **Wait for the official release** that merges the host change, then `dsh plugin add` this package works out of the box.
 
+### Self-hosting before the official release (manual patch)
+
+The host change is **three packages** in the dsh source tree. If you build dsh from source, give your agent this exact instruction:
+
+> Add a comment-preserving `agentPreset.rewrite` endpoint to dsh, then install `@deepseek-ai/dsh-client-agent-plugboard`. The change is three packages:
+>
+> 1. `packages/preset/agent-presets` — add `rewriteComposition(roots, preset, toggles)` to `src/authoring.ts` (reuse `deleteComposition`'s two guards: `preset.trust === 'user'` and path-under-writable-root; edit with the `yaml` v2 `Document` API via `parseDocument`/`set`/`delete`/`addIn` so comments and `!!js` text survive), add a `rewrite(id, toggles)` method to the service in `src/index.ts`, and add `yaml@^2` to its dependencies.
+> 2. `packages/host/apiproxy` — add the `rewrite` contract in `src/api/agent-presets.ts`, a request/value schema in `src/api/agent-presets.schema.ts`, the `'agentPreset.rewrite'` key in `src/api/rpc-map.ts`, the handler case in `src/fetch/handler.ts`, the client method in `src/fetch/client.ts`, and the `rewrite` implementation in `src/api-proxy.ts` (loopback-pinned, privileged, like `copy`/`remove`).
+> 3. **This package** — already published here; `dsh plugin --profile web add @deepseek-ai/dsh-client-agent-plugboard`.
+>
+> Then `pnpm run build && pnpm dsh --profile web` and restart.
+
+The precise diff for the first two packages is what the [tracking PR](#) submits to `deepseek-ai/deepseek-harness` — point your agent at that PR once it is filed, and it can reproduce the change exactly rather than re-derive it.
+
 ## Install
 
 ```sh

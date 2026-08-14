@@ -1,0 +1,13 @@
+# Agent Plugboard bundle patch: inserts this plugin's browser row into the
+# profile's web composition. `dsh plugin add @deepseek-ai/dsh-client-agent-plugboard`
+# discovers this file via `dsh.bundle.patch` and appends the row below to the
+# profile's layer stack.
+#
+# The row registers ONLY the browser half (the settings page). The backend
+# `agentPreset.rewrite` endpoint it calls is part of the dsh host
+# (dsh-agent-presets + dsh-host-apiproxy) — see README for the required host
+# change, which this plugin cannot ship on its own.
+
+- insert:
+    - id: agent-plugboard
+      name: '@deepseek-ai/dsh-client-agent-plugboard'

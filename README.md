@@ -23,9 +23,11 @@ The page reads a preset's `agent.cordis.yml` (via `agentPreset.read`) and the ru
 
 ## Required host support (⚠️ read this)
 
-The **browser half ships in this package**, but the **backend `agentPreset.rewrite` endpoint it calls belongs to the dsh host** (`@deepseek-ai/dsh-agent-presets` + `@deepseek-ai/dsh-host-apiproxy`). That endpoint is **not yet in a released dsh version** — see the tracking issue / PR:
+The **browser half ships in this package**, but the **backend `agentPreset.rewrite` endpoint it calls belongs to the dsh host** (`@deepseek-ai/dsh-agent-presets` + `@deepseek-ai/dsh-host-apiproxy`). That endpoint is **not yet in a released dsh version** — track it here:
 
-- [[dsh] agentPreset.rewrite — structured, comment-preserving preset plugin toggles](https://github.com/deepseek-ai/deepseek-harness/issues) (to file)
+- [[dsh] agentPreset.rewrite — structured, comment-preserving preset plugin toggles](https://github.com/Yuanuite/dsh-client-agent-plugboard/issues/1)
+
+> Why not the upstream repo? `deepseek-ai/deepseek-harness` currently has **issues disabled**, so this issue lives here until the backend change is submitted as an upstream PR.
 
 Until that host change ships, installing this package alone gives you the page, but **Apply fails with `agent-preset-not-found`/404** against an unpatched host. Two ways forward:
 
@@ -44,7 +46,7 @@ The host change is **three packages** in the dsh source tree. If you build dsh f
 >
 > Then `pnpm run build && pnpm dsh --profile web` and restart.
 
-The precise diff for the first two packages is what the [tracking PR](#) submits to `deepseek-ai/deepseek-harness` — point your agent at that PR once it is filed, and it can reproduce the change exactly rather than re-derive it.
+The precise diff for the first two packages is what the [tracking issue](https://github.com/Yuanuite/dsh-client-agent-plugboard/issues/1) describes — once an upstream PR is filed, point your agent at that PR and it can reproduce the change exactly rather than re-derive it.
 
 ## Install
 

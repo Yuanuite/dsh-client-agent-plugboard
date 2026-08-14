@@ -23,9 +23,11 @@ Web 设置里多出一个 **Agent 插线板** 入口。打开它，从名单里�
 
 ## 必需的后端支持（⚠️ 请先读）
 
-**浏览器半侧随本包发布**，但它调用的**后端 `agentPreset.rewrite` 端点属于 dsh 宿主**（`@deepseek-ai/dsh-agent-presets` + `@deepseek-ai/dsh-host-apiproxy`）。该端点**尚未进入任何已发布的 dsh 版本**——见待提交的 issue / PR：
+**浏览器半侧随本包发布**，但它调用的**后端 `agentPreset.rewrite` 端点属于 dsh 宿主**（`@deepseek-ai/dsh-agent-presets` + `@deepseek-ai/dsh-host-apiproxy`）。该端点**尚未进入任何已发布的 dsh 版本**——追踪这里：
 
-- [[dsh] agentPreset.rewrite —— 结构化、保留注释的预设插件开关](https://github.com/deepseek-ai/deepseek-harness/issues)（待提交）
+- [[dsh] agentPreset.rewrite —— 结构化、保留注释的预设插件开关](https://github.com/Yuanuite/dsh-client-agent-plugboard/issues/1)
+
+> 为什么不放到官方仓库？因为 `deepseek-ai/deepseek-harness` 目前**禁用了 issues**，所以这个 issue 先放在本仓库，等后端改动以 PR 形式提交官方后再说。
 
 在宿主改动合并之前，只装本包能拿到页面，但**对未打补丁的宿主，「应用」会以 `agent-preset-not-found`/404 失败**。有两条路：
 
@@ -44,7 +46,7 @@ Web 设置里多出一个 **Agent 插线板** 入口。打开它，从名单里�
 >
 > 然后 `pnpm run build && pnpm dsh --profile web`，重启即可。
 
-前两个包的具体 diff，就是那个要提交给 `deepseek-ai/deepseek-harness` 的 [tracking PR](#)。等 PR 建好后，让 agent 直接照着这个 PR 来，就能**精确复现**改动，而不是自己重新摸索。
+前两个包的具体 diff，就是那个 [tracking issue](https://github.com/Yuanuite/dsh-client-agent-plugboard/issues/1) 里描述的内容。等官方 PR 建好后，让 agent 直接照着这个 PR 来，就能**精确复现**改动，而不是自己重新摸索。
 
 #### 如果你「不是」从源码构建 dsh
 
